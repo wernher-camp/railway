@@ -30,7 +30,10 @@ export class RegistrarClienteComponent {
   }
 
   onSubmit() {
-    if (!this.clienteForm.valid) return;
+    if (!this.clienteForm.valid) {
+      this.errorMessage = 'Por favor completa todos los campos correctamente.';
+      return;
+    }
 
     const empleadoData = {
       nombreEmpleado: this.clienteForm.value.nombre,
@@ -43,20 +46,29 @@ export class RegistrarClienteComponent {
     this.errorMessage = '';
     this.submitSuccess = false;
 
-    this.http.post(this.apiUrl, empleadoData)
+    this.http.post<any>(this.apiUrl, empleadoData)
       .pipe(
         catchError(error => {
           this.loading = false;
-          this.errorMessage = 'Error al registrar empleado. Por favor intenta nuevamente.';
+          // Captura el mensaje del servidor si existe
+          if (error.error && error.error.message) {
+            this.errorMessage = `Error del servidor: ${error.error.message}`;
+          } else {
+            this.errorMessage = 'Error al registrar empleado. Por favor intenta nuevamente.';
+          }
           return throwError(error);
         })
       )
       .subscribe({
-        next: () => {
+        next: (response) => {
           this.loading = false;
-          this.submitSuccess = true;
-          this.clienteForm.reset();
-          setTimeout(() => this.submitSuccess = false, 3000);
+          if (response && response.success) {
+            this.submitSuccess = true;
+            this.clienteForm.reset();
+            setTimeout(() => this.submitSuccess = false, 3000);
+          } else {
+            this.errorMessage = response?.message || 'No se pudo registrar el empleado.';
+          }
         },
         error: () => {
           this.loading = false;
