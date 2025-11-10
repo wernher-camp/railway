@@ -5,23 +5,22 @@ import { catchError } from 'rxjs/operators';
 import { throwError } from 'rxjs';
 import { CommonModule } from '@angular/common';
 
-
 @Component({
   selector: 'app-registrar-cliente',
   standalone: true,
   templateUrl: './registrar-cliente.component.html',
   styleUrls: ['./registrar-cliente.component.css'],
-  imports: [ReactiveFormsModule,HttpClientModule, CommonModule]
+  imports: [ReactiveFormsModule, HttpClientModule, CommonModule]
 })
-
 export class RegistrarClienteComponent {
   clienteForm: FormGroup;
   loading = false;
   submitSuccess = false;
   errorMessage = '';
 
-  //constructor 
-  constructor(private fb: FormBuilder,private http: HttpClient) {
+  private apiUrl = 'https://micro-factura-demo-production.up.railway.app/api/registrarEmpleado';
+
+  constructor(private fb: FormBuilder, private http: HttpClient) {
     this.clienteForm = this.fb.group({
       nombre: ['', Validators.required],
       edad: ['', [Validators.required, Validators.min(18)]],
@@ -31,27 +30,20 @@ export class RegistrarClienteComponent {
   }
 
   onSubmit() {
-    if (this.clienteForm.valid) {
-      console.log(this.clienteForm.value);
-      // Aquí puedes enviar los datos a un servicio o API
-      const edad = this.clienteForm.get('edad')?.value;
-      const nombre = this.clienteForm.get('nombre')?.value;
-      console.log('Edad registrada ', edad);
-      console.log('nombre registrada ', nombre);
-      console.log('felices vacas...');
+    if (!this.clienteForm.valid) return;
 
-      this.loading = true;
-      this.errorMessage = '';
-      this.submitSuccess = false;
+    const empleadoData = {
+      nombreEmpleado: this.clienteForm.value.nombre,
+      direccion: this.clienteForm.value.direccion,
+      edad: this.clienteForm.value.edad,
+      puesto: this.clienteForm.value.puesto
+    };
 
-      const empleadoData = {
-        nombreEmpleado: this.clienteForm.value.nombre,
-        direccion: this.clienteForm.value.direccion,
-        edad: this.clienteForm.value.edad,
-        puesto: this.clienteForm.value.puesto
-      };
+    this.loading = true;
+    this.errorMessage = '';
+    this.submitSuccess = false;
 
-     this.http.post('https://micro-factura-demo.up.railway.app/api/registrarEmpleado', empleadoData)
+    this.http.post(this.apiUrl, empleadoData)
       .pipe(
         catchError(error => {
           this.loading = false;
@@ -70,9 +62,5 @@ export class RegistrarClienteComponent {
           this.loading = false;
         }
       });
-
-    } else {
-      console.log('Formulario no válido');
-    }
   }
 }
