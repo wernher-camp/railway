@@ -51,7 +51,7 @@ export class RegistrarClienteComponent {
         puesto: this.clienteForm.value.puesto
       };
 
-      this.http.post('https://micro-factura-demo.up.railway.app/api/registrarEmpleado', empleadoData)
+      this.http.post('railway-production-cded.up.railway.app/api/registrarEmpleado', empleadoData)
       .pipe(
         catchError(error => {
           this.loading = false;
