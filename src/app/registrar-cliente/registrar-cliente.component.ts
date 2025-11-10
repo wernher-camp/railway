@@ -18,7 +18,7 @@ export class RegistrarClienteComponent {
   submitSuccess = false;
   errorMessage = '';
 
-  private apiUrl = 'https://micro-factura-demo-production.up.railway.app/registrarEmpleado';
+  private apiUrl = 'https://micro-factura-demo-production.up.railway.app/api/registrarEmpleado';
 
   constructor(private fb: FormBuilder, private http: HttpClient) {
     this.clienteForm = this.fb.group({
