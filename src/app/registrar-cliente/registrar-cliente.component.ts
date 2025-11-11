@@ -35,12 +35,12 @@ export class RegistrarClienteComponent {
       return;
     }
 
-    const empleadoData = {
-      nombreEmpleado: this.clienteForm.value.nombre,
-      direccion: this.clienteForm.value.direccion,
-      edad: this.clienteForm.value.edad,
-      puesto: this.clienteForm.value.puesto
-    };
+const empleadoData = {
+  nombreEmpleado: this.clienteForm.value.nombre,
+  direccion: this.clienteForm.value.direccion,
+  edad: Number(this.clienteForm.value.edad),
+  puesto: this.clienteForm.value.puesto
+};
 
     this.loading = true;
     this.errorMessage = '';
