@@ -1,9 +1,9 @@
 import { Component } from '@angular/core';
-import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { HttpClient, HttpClientModule } from '@angular/common/http';
+import { CommonModule } from '@angular/common';
 import { catchError } from 'rxjs/operators';
 import { throwError } from 'rxjs';
-import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-registrar-cliente',
@@ -35,12 +35,12 @@ export class RegistrarClienteComponent {
       return;
     }
 
-const empleadoData = {
-  nombreEmpleado: this.clienteForm.value.nombre,
-  direccion: this.clienteForm.value.direccion,
-  edad: Number(this.clienteForm.value.edad),
-  puesto: this.clienteForm.value.puesto
-};
+    const empleadoData = {
+      nombreEmpleado: this.clienteForm.value.nombre,
+      direccion: this.clienteForm.value.direccion,
+      edad: Number(this.clienteForm.value.edad),
+      puesto: this.clienteForm.value.puesto
+    };
 
     this.loading = true;
     this.errorMessage = '';
@@ -50,19 +50,17 @@ const empleadoData = {
       .pipe(
         catchError(error => {
           this.loading = false;
-          // Captura el mensaje del servidor si existe
-          if (error.error && error.error.message) {
-            this.errorMessage = `Error del servidor: ${error.error.message}`;
-          } else {
-            this.errorMessage = 'Error al registrar empleado. Por favor intenta nuevamente.';
-          }
-          return throwError(error);
+          console.error('Error API:', error);
+          this.errorMessage = error.error?.message || 'Error al registrar empleado.';
+          return throwError(() => error);
         })
       )
       .subscribe({
         next: (response) => {
           this.loading = false;
-          if (response && response.success) {
+          console.log('Respuesta API:', response);
+
+          if (response?.success) {
             this.submitSuccess = true;
             this.clienteForm.reset();
             setTimeout(() => this.submitSuccess = false, 3000);
